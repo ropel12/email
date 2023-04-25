@@ -1,0 +1,49 @@
+package container
+
+import (
+	"github.com/nsqio/go-nsq"
+	"github.com/ropel12/email/config"
+	"github.com/ropel12/email/pkg"
+)
+
+type Depend struct {
+	Config      *config.Config
+	NSQConsumer *pkg.NSQConsumer
+}
+
+func InitContainer() (*Depend, error) {
+	config, err := config.NewConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	nsqConsumer, err := NewNSQConsumer(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Depend{
+		Config:      config,
+		NSQConsumer: nsqConsumer,
+	}, nil
+}
+func NewNSQConsumer(conf *config.Config) (*pkg.NSQConsumer, error) {
+	nc := &pkg.NSQConsumer{}
+	nc.Env = conf.NSQ
+	var err error
+	nsqConfig := nsq.NewConfig()
+	nc.Consumer, err = nsq.NewConsumer(nc.Env.Topic, nc.Env.Channel, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	nc.Consumer2, err = nsq.NewConsumer(nc.Env.Topic2, nc.Env.Channel2, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+	nc.Consumer3, err = nsq.NewConsumer(nc.Env.Topic3, nc.Env.Channel3, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+	return nc, nil
+}

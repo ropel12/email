@@ -1,0 +1,22 @@
+{
+    "SENDER" : {
+        "EMAIL":"test@gmail.com",
+        "PASSWORD": "tes",
+        "PHONE": "08219322233",
+        "NAME": "Go-EVENT",
+        "SLOGAN": "Wujudkan Acaramu Dengan Lebih Mudah",
+        "TWTR": "www.twitter.com",
+        "IG": "www.twitter.com",
+        "FB": "www.twitter.com"
+    },
+    "NSQ": {
+        "HOST": "89.123.120",
+        "PORT": "5123",
+        "TOPIC": "PENDING",
+        "CHANNEL": "CHANNEL-1",
+        "TOPIC2": "SUCCESS",
+        "CHANNEL2": "CHANNEL-2",
+        "TOPIC3": "CANCEL",
+        "CHANNEL3": "CHANNEL-3"
+    }
+}
