@@ -91,7 +91,7 @@ func SendEmailSuccessPayment(sdata config.SenderConfig, rdata entities.Data) {
 		body:    bytes.Buffer{},
 	}
 
-	t, err := getTemplate("pending.html")
+	t, err := getTemplate("success.html")
 	if err != nil {
 		log.Printf("[ERROR] Failed to get template: %s", err)
 		return
@@ -141,7 +141,7 @@ func SendEmailCancelPayment(sdata config.SenderConfig, rdata entities.Data) {
 		body:    bytes.Buffer{},
 	}
 
-	t, err := getTemplate("pending.html")
+	t, err := getTemplate("cancel.html")
 	if err != nil {
 		log.Printf("[ERROR] Failed to get template: %s", err)
 		return

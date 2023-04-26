@@ -11,7 +11,7 @@ type NSQConfig struct {
 	Channel  string `mapstructure:"CHANNEL"`
 	Topic2   string `mapstructure:"TOPIC2"`
 	Channel2 string `mapstructure:"CHANNEL2"`
-	Topic3   string `mapstructure:"TOPIC2"`
+	Topic3   string `mapstructure:"TOPIC3"`
 	Channel3 string `mapstructure:"CHANNEL3"`
 }
 
