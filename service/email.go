@@ -213,7 +213,7 @@ func sendEmail(emailSender, passSender, emailReceiver string, sb subjectBody) er
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: false}
 
 	if err := d.DialAndSend(m); err != nil {
 		return err
