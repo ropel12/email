@@ -183,6 +183,56 @@ func SendEmailCancelPayment(sdata config.SenderConfig, rdata entities.Data) {
 	log.Printf("[INFO] Email cancel payment sent to %s", rdata.Email)
 
 }
+func SendEmailRefundPayment(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending email refund payment from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Pengembalian %s", rdata.Invoice),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("refund.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		URL     string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		Invoice string
+	}{
+		URL:     FrontEndURL + rdata.Invoice,
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Invoice: rdata.Invoice,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email refund payment sent to %s", rdata.Email)
+
+}
 
 func getTemplate(htmlFile string) (t *template.Template, err error) {
 	wd, err := os.Getwd()
@@ -213,7 +263,7 @@ func sendEmail(emailSender, passSender, emailReceiver string, sb subjectBody) er
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: false}
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
 	if err := d.DialAndSend(m); err != nil {
 		return err

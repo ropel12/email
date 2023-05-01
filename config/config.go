@@ -13,6 +13,8 @@ type NSQConfig struct {
 	Channel2 string `mapstructure:"CHANNEL2"`
 	Topic3   string `mapstructure:"TOPIC3"`
 	Channel3 string `mapstructure:"CHANNEL3"`
+	Topic4   string `mapstructure:"TOPIC4"`
+	Channel4 string `mapstructure:"CHANNEL4"`
 }
 
 type SenderConfig struct {
