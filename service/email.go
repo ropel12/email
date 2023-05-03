@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	FrontEndURL = "https://goapp.com/INV-23232323232"
+	FrontEndURL = "https://event-planner-app-two.vercel.app/transaction"
 
 	EmailHost = "smtp.gmail.com"
 )
@@ -109,7 +109,7 @@ func SendEmailSuccessPayment(sdata config.SenderConfig, rdata entities.Data) {
 		Cusname string
 		Invoice string
 	}{
-		URL:     FrontEndURL + rdata.Invoice,
+		URL:     FrontEndURL,
 		TWT:     sdata.Twitter,
 		FB:      sdata.Facebook,
 		IG:      sdata.Instagram,
@@ -159,7 +159,7 @@ func SendEmailCancelPayment(sdata config.SenderConfig, rdata entities.Data) {
 		Cusname string
 		Invoice string
 	}{
-		URL:     FrontEndURL + rdata.Invoice,
+		URL:     FrontEndURL,
 		TWT:     sdata.Twitter,
 		FB:      sdata.Facebook,
 		IG:      sdata.Instagram,
@@ -209,7 +209,7 @@ func SendEmailRefundPayment(sdata config.SenderConfig, rdata entities.Data) {
 		Cusname string
 		Invoice string
 	}{
-		URL:     FrontEndURL + rdata.Invoice,
+		URL:     FrontEndURL,
 		TWT:     sdata.Twitter,
 		FB:      sdata.Facebook,
 		IG:      sdata.Instagram,
