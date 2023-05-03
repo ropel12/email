@@ -55,7 +55,7 @@ func SendEmailPendingPayment(sdata config.SenderConfig, rdata entities.Data) {
 		Pmethod string
 		Expire  string
 	}{
-		URL:     FrontEndURL + rdata.Invoice,
+		URL:     FrontEndURL,
 		TWT:     sdata.Twitter,
 		FB:      sdata.Facebook,
 		IG:      sdata.Instagram,
