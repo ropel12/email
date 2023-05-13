@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	FrontEndURL  = "http://localhost:8000/verify/"
+	FrontEndURL  = "https://go-event.online/verify/"
+	FrontEndURL3 = "https://go-event.online/updateverif/"
 	FrontEndURL2 = "http://localhost:8000/reset/"
 
 	EmailHost = "smtp.gmail.com"
@@ -328,7 +329,7 @@ func SendEmailChangeEmail(sdata config.SenderConfig, hashedemail string) {
 	err = t.Execute(&sb.body, struct {
 		URL string
 	}{
-		URL: FrontEndURL + hashedemail,
+		URL: FrontEndURL3 + hashedemail,
 	})
 
 	if err != nil {
