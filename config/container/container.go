@@ -1,6 +1,8 @@
 package container
 
 import (
+	"fmt"
+
 	"github.com/nsqio/go-nsq"
 	"github.com/ropel12/email/config"
 	"github.com/ropel12/email/pkg"
@@ -16,6 +18,7 @@ func InitContainer() (*Depend, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(config.NSQ.Topic5)
 
 	nsqConsumer, err := NewNSQConsumer(config)
 	if err != nil {
@@ -46,6 +49,18 @@ func NewNSQConsumer(conf *config.Config) (*pkg.NSQConsumer, error) {
 		return nil, err
 	}
 	nc.Consumer4, err = nsq.NewConsumer(nc.Env.Topic4, nc.Env.Channel4, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+	nc.Consumer5, err = nsq.NewConsumer(nc.Env.Topic5, nc.Env.Channel5, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+	nc.Consumer6, err = nsq.NewConsumer(nc.Env.Topic6, nc.Env.Channel6, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
+	nc.Consumer7, err = nsq.NewConsumer(nc.Env.Topic7, nc.Env.Channel7, nsqConfig)
 	if err != nil {
 		return nil, err
 	}

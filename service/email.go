@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/base32"
 	"fmt"
 	"html/template"
 	"log"
@@ -15,7 +16,8 @@ import (
 )
 
 const (
-	FrontEndURL = "https://event-planner-app-two.vercel.app/transaction"
+	FrontEndURL  = "http://localhost:8000/verify/"
+	FrontEndURL2 = "http://localhost:8000/reset/"
 
 	EmailHost = "smtp.gmail.com"
 )
@@ -233,13 +235,120 @@ func SendEmailRefundPayment(sdata config.SenderConfig, rdata entities.Data) {
 	log.Printf("[INFO] Email refund payment sent to %s", rdata.Email)
 
 }
+func SendEmailVerification(sdata config.SenderConfig, hashedemail string) {
+	log.Printf("[INFO] Sending email verification from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Verifikasi Email"),
+		body:    bytes.Buffer{},
+	}
+	email, err := base32.StdEncoding.DecodeString(hashedemail)
+	if err != nil {
+		log.Printf("[ERROR] Failed to decode email receiver: %s", err)
+		return
+	}
+	t, err := getTemplate("verify.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		URL string
+	}{
+		URL: FrontEndURL + hashedemail,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, string(email), sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email verification sent to %s", string(email))
+
+}
+func SendEmailResetPassword(sdata config.SenderConfig, hashedemail string) {
+	log.Printf("[INFO] Sending Reset Password from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Reset Password"),
+		body:    bytes.Buffer{},
+	}
+	email, err := base32.StdEncoding.DecodeString(hashedemail)
+	if err != nil {
+		log.Printf("[ERROR] Failed to decode email receiver: %s", err)
+		return
+	}
+	t, err := getTemplate("reset.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		URL string
+	}{
+		URL: FrontEndURL2 + hashedemail,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, string(email), sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email Reset Password sent to %s", string(email))
+
+}
+func SendEmailChangeEmail(sdata config.SenderConfig, hashedemail string) {
+	log.Printf("[INFO] Sending Change Email from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Change Email"),
+		body:    bytes.Buffer{},
+	}
+	email, err := base32.StdEncoding.DecodeString(hashedemail)
+	if err != nil {
+		log.Printf("[ERROR] Failed to decode email receiver: %s", err)
+		return
+	}
+	t, err := getTemplate("changeemail.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		URL string
+	}{
+		URL: FrontEndURL + hashedemail,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, string(email), sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email Change Email sent to %s", string(email))
+
+}
 
 func getTemplate(htmlFile string) (t *template.Template, err error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("ini wd", wd)
 
 	wd = wd + "/template/"
 

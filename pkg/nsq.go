@@ -14,6 +14,9 @@ type NSQConsumer struct {
 	Consumer2 *nsq.Consumer
 	Consumer3 *nsq.Consumer
 	Consumer4 *nsq.Consumer
+	Consumer5 *nsq.Consumer
+	Consumer6 *nsq.Consumer
+	Consumer7 *nsq.Consumer
 	Env       config.NSQConfig
 }
 
@@ -47,7 +50,21 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig) error {
 		message.Finish()
 		return nil
 	}))
-
+	nc.Consumer5.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		go service.SendEmailVerification(rdata, string(message.Body))
+		message.Finish()
+		return nil
+	}))
+	nc.Consumer6.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		go service.SendEmailResetPassword(rdata, string(message.Body))
+		message.Finish()
+		return nil
+	}))
+	nc.Consumer7.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		go service.SendEmailChangeEmail(rdata, string(message.Body))
+		message.Finish()
+		return nil
+	}))
 	if err := nc.Consumer.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
@@ -61,6 +78,15 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig) error {
 	if err := nc.Consumer4.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
+	if err := nc.Consumer5.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
+	if err := nc.Consumer6.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
+	if err := nc.Consumer7.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -70,4 +96,7 @@ func (nc *NSQConsumer) Stop() {
 	nc.Consumer2.Stop()
 	nc.Consumer3.Stop()
 	nc.Consumer4.Stop()
+	nc.Consumer5.Stop()
+	nc.Consumer6.Stop()
+	nc.Consumer7.Stop()
 }

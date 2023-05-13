@@ -16,7 +16,7 @@ func main() {
 	}
 
 	go func() {
-		log.Println("[INFO] Starting Ecommerce Service Consumer")
+		log.Println("[INFO] Starting Service Consumer")
 		if err := con.NSQConsumer.Start(con.Config.Sender); err != nil {
 			log.Fatalf("[FATAL] Failed to start NSQ Consumer: %v", err)
 		}
@@ -27,5 +27,5 @@ func main() {
 	<-c
 
 	con.NSQConsumer.Stop()
-	log.Println("[INFO] Ecommerce Email Service Consumer Stopped")
+	log.Println("[INFO]  Email Service Consumer Stopped")
 }
