@@ -18,7 +18,7 @@ import (
 const (
 	FrontEndURL  = "https://go-event.online/verify/"
 	FrontEndURL3 = "https://go-event.online/updateverif/"
-	FrontEndURL2 = "http://localhost:8000/reset/"
+	FrontEndURL2 = "https://education-hub-fe-3q5c.vercel.app/pwd-new/"
 
 	EmailHost = "smtp.gmail.com"
 )
