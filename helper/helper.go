@@ -125,6 +125,25 @@ func AddQuiz(data entities.ReqAddQuiz, auth, prevlink, publink, reslink string) 
 	_, err = ioutil.ReadAll(resp.Body)
 	log.Println("[ERROR]ADD A NEW QUESTION", err)
 }
+func SaveQuestion(auth string) {
+	t := &http2.Transport{}
+	client := http.Client{
+		Transport: t,
+	}
+	req, err := http.NewRequest("POST", "https://www.flexiquiz.com/Create/SaveAddQuestionEvent", nil)
+	if err != nil {
+		log.Printf("[ERROR]WHEN SaveAddQuestionEvent, Err: %v", err)
+	}
+	cookie := &http.Cookie{Name: ".ASPXAUTH", Value: auth}
+	req.AddCookie(cookie)
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("[ERROR]WHEN SETTING TO PUBLIC, Err: %v", err)
+	}
+	defer resp.Body.Close()
+	_, err = ioutil.ReadAll(resp.Body)
+	log.Println("[ERROR]ADD A NEW QUESTION", err)
+}
 
 func SetPublish(auth, publink string) {
 	values := url.Values{}
