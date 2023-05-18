@@ -67,7 +67,7 @@ func AddQuiz(data entities.ReqAddQuiz, auth, prevlink, publink, reslink string) 
 			OptionPointsSet: 0,
 			OptionFileName:  "",
 			OptionImageID:   "00000000-0000-0000-0000-000000000000",
-			OptionRow:       "0",
+			OptionRow:       fmt.Sprintf("%d", i),
 			OptionChar:      "",
 		}
 		options = append(options, optionn)
@@ -206,7 +206,6 @@ func SetRequiredEmail(auth, testlink string) {
 	values2 := url.Values{}
 	values2.Set("registrationItemId", res)
 	values2.Set("required", "true")
-	fmt.Println(values2.Encode())
 	req2, err := http.NewRequest("POST", "https://www.flexiquiz.com/Configure/SaveRegistrationItemRequired", strings.NewReader(values2.Encode()))
 	if err != nil {
 		log.Printf("[ERROR]WHEN SETTING TO PUBLIC, Err : %v", err)
