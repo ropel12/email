@@ -12,4 +12,19 @@ type (
 		School        string `json:"school"`
 		Test          string `json:"test"`
 	}
+	ReqAddQuiz struct {
+		SchoolID int    `json:"school_id"`
+		Question string `json:"question"`
+		Option1  string `json:"option1"`
+		Option2  string `json:"option2"`
+		Option3  string `json:"option3"`
+		Option4  string `json:"option4"`
+		Answer   int    `json:"answer"`
+	}
+	ReqDataQuiz struct {
+		PubLink    string       `json:"pub_link"`
+		Prevlink   string       `json:"prev_link"`
+		ResultLink string       `json:"result_link"`
+		Data       []ReqAddQuiz `json:"data"`
+	}
 )

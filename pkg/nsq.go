@@ -18,10 +18,11 @@ type NSQConsumer struct {
 	Consumer6 *nsq.Consumer
 	Consumer7 *nsq.Consumer
 	Consumer8 *nsq.Consumer
+	Consumer9 *nsq.Consumer
 	Env       config.NSQConfig
 }
 
-func (nc *NSQConsumer) Start(rdata config.SenderConfig) error {
+func (nc *NSQConsumer) Start(rdata config.SenderConfig, Authquiz string) error {
 	nc.Consumer.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		data := entities.Data{}
 		json.Unmarshal(message.Body, &data)
@@ -73,6 +74,15 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig) error {
 		message.Finish()
 		return nil
 	}))
+	nc.Consumer9.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		go func() {
+			data := entities.ReqDataQuiz{}
+			json.Unmarshal(message.Body, &data)
+			service.AddQuiz(data, Authquiz)
+			message.Finish()
+		}()
+		return nil
+	}))
 	if err := nc.Consumer.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
@@ -98,6 +108,9 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig) error {
 	if err := nc.Consumer8.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
+	if err := nc.Consumer9.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -111,4 +124,5 @@ func (nc *NSQConsumer) Stop() {
 	nc.Consumer6.Stop()
 	nc.Consumer7.Stop()
 	nc.Consumer8.Stop()
+	nc.Consumer9.Stop()
 }

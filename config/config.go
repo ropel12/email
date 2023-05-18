@@ -23,6 +23,8 @@ type NSQConfig struct {
 	Channel7 string `mapstructure:"CHANNEL7"`
 	Topic8   string `mapstructure:"TOPIC8"`
 	Channel8 string `mapstructure:"CHANNEL8"`
+	Topic9   string `mapstructure:"TOPIC9"`
+	Channel9 string `mapstructure:"CHANNEL9"`
 }
 
 type SenderConfig struct {
@@ -38,8 +40,9 @@ type SenderConfig struct {
 }
 
 type Config struct {
-	Sender SenderConfig `mapstructure:"SENDER"`
-	NSQ    NSQConfig    `mapstructure:"NSQ"`
+	Sender   SenderConfig `mapstructure:"SENDER"`
+	NSQ      NSQConfig    `mapstructure:"NSQ"`
+	AuthQuiz string       `mapstructure:"QUIZ"`
 }
 
 func NewConfig() (*Config, error) {
