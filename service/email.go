@@ -236,6 +236,56 @@ func SendEmailRefundPayment(sdata config.SenderConfig, rdata entities.Data) {
 	log.Printf("[INFO] Email refund payment sent to %s", rdata.Email)
 
 }
+func SendTest(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending email SendTest from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Test Pendaftaran %s", rdata.School),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("test.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		URL     string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		School  string
+	}{
+		URL:     rdata.Test,
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+		School:  rdata.School,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email SendTest sent to %s", rdata.Email)
+
+}
 func SendEmailVerification(sdata config.SenderConfig, hashedemail string) {
 	log.Printf("[INFO] Sending email verification from %s", sdata.Email)
 

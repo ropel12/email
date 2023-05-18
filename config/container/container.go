@@ -64,5 +64,9 @@ func NewNSQConsumer(conf *config.Config) (*pkg.NSQConsumer, error) {
 	if err != nil {
 		return nil, err
 	}
+	nc.Consumer8, err = nsq.NewConsumer(nc.Env.Topic8, nc.Env.Channel8, nsqConfig)
+	if err != nil {
+		return nil, err
+	}
 	return nc, nil
 }

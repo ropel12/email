@@ -9,5 +9,7 @@ type (
 		PaymentCode   string `json:"payment_code"`
 		PaymentMethod string `json:"payment_method"`
 		Expire        string `json:"expire"`
+		School        string `json:"school"`
+		Test          string `json:"test"`
 	}
 )
