@@ -35,11 +35,11 @@ func AddQuiz(data entities.ReqAddQuiz, auth, prevlink, publink, reslink string) 
 	case 1:
 		point1 = 1
 	case 2:
-		point2 = 2
+		point2 = 1
 	case 3:
-		point3 = 3
+		point3 = 1
 	case 4:
-		point4 = 4
+		point4 = 1
 	}
 	options := []Option{}
 	for i := 0; i < 4; i++ {
