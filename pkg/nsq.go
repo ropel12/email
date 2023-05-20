@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/nsqio/go-nsq"
 	"github.com/ropel12/email/config"
@@ -10,19 +11,20 @@ import (
 )
 
 type NSQConsumer struct {
-	Consumer  *nsq.Consumer
-	Consumer2 *nsq.Consumer
-	Consumer3 *nsq.Consumer
-	Consumer4 *nsq.Consumer
-	Consumer5 *nsq.Consumer
-	Consumer6 *nsq.Consumer
-	Consumer7 *nsq.Consumer
-	Consumer8 *nsq.Consumer
-	Consumer9 *nsq.Consumer
-	Env       config.NSQConfig
+	Consumer   *nsq.Consumer
+	Consumer2  *nsq.Consumer
+	Consumer3  *nsq.Consumer
+	Consumer4  *nsq.Consumer
+	Consumer5  *nsq.Consumer
+	Consumer6  *nsq.Consumer
+	Consumer7  *nsq.Consumer
+	Consumer8  *nsq.Consumer
+	Consumer9  *nsq.Consumer
+	Consumer10 *nsq.Consumer
+	Env        config.NSQConfig
 }
 
-func (nc *NSQConsumer) Start(rdata config.SenderConfig, Authquiz string) error {
+func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) error {
 	nc.Consumer.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		data := entities.Data{}
 		json.Unmarshal(message.Body, &data)
@@ -69,6 +71,7 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, Authquiz string) error {
 	}))
 	nc.Consumer8.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		data := entities.Data{}
+		fmt.Println(conf.AuthQuiz)
 		json.Unmarshal(message.Body, &data)
 		go service.SendTest(rdata, data)
 		message.Finish()
@@ -78,9 +81,15 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, Authquiz string) error {
 		go func() {
 			data := entities.ReqDataQuiz{}
 			json.Unmarshal(message.Body, &data)
-			service.AddQuiz(data, Authquiz)
+			service.AddQuiz(data, conf.AuthQuiz)
 			message.Finish()
 		}()
+		return nil
+	}))
+	nc.Consumer10.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		fmt.Println(conf.AuthQuiz)
+		conf.AuthQuiz = string(message.Body)
+		message.Finish()
 		return nil
 	}))
 	if err := nc.Consumer.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
@@ -111,6 +120,9 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, Authquiz string) error {
 	if err := nc.Consumer9.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
+	if err := nc.Consumer10.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -125,4 +137,5 @@ func (nc *NSQConsumer) Stop() {
 	nc.Consumer7.Stop()
 	nc.Consumer8.Stop()
 	nc.Consumer9.Stop()
+	nc.Consumer10.Stop()
 }

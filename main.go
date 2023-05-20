@@ -17,7 +17,7 @@ func main() {
 
 	go func() {
 		log.Println("[INFO] Starting Service Consumer")
-		if err := con.NSQConsumer.Start(con.Config.Sender, con.Config.AuthQuiz); err != nil {
+		if err := con.NSQConsumer.Start(con.Config.Sender, con.Config); err != nil {
 			log.Fatalf("[FATAL] Failed to start NSQ Consumer: %v", err)
 		}
 	}()
