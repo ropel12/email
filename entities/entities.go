@@ -11,6 +11,8 @@ type (
 		Expire        string `json:"expire"`
 		School        string `json:"school"`
 		Test          string `json:"test"`
+		Type          string `json:"type"`
+		Schoolid      int    `json:"school_id"`
 	}
 	ReqAddQuiz struct {
 		SchoolID int    `json:"school_id"`

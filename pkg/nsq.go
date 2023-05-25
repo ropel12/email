@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/nsqio/go-nsq"
 	"github.com/ropel12/email/config"
@@ -21,6 +20,8 @@ type NSQConsumer struct {
 	Consumer8  *nsq.Consumer
 	Consumer9  *nsq.Consumer
 	Consumer10 *nsq.Consumer
+	Consumer11 *nsq.Consumer
+	Consumer12 *nsq.Consumer
 	Env        config.NSQConfig
 }
 
@@ -71,7 +72,6 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) err
 	}))
 	nc.Consumer8.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		data := entities.Data{}
-		fmt.Println(conf.AuthQuiz)
 		json.Unmarshal(message.Body, &data)
 		go service.SendTest(rdata, data)
 		message.Finish()
@@ -87,8 +87,22 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) err
 		return nil
 	}))
 	nc.Consumer10.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
-		fmt.Println(conf.AuthQuiz)
+
 		conf.AuthQuiz = string(message.Body)
+		message.Finish()
+		return nil
+	}))
+	nc.Consumer11.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		data := entities.Data{}
+		json.Unmarshal(message.Body, &data)
+		go service.SendDetailCost(rdata, data)
+		message.Finish()
+		return nil
+	}))
+	nc.Consumer12.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		data := entities.Data{}
+		json.Unmarshal(message.Body, &data)
+		go service.SendFinishRegister(rdata, data)
 		message.Finish()
 		return nil
 	}))
@@ -121,6 +135,12 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) err
 		return err
 	}
 	if err := nc.Consumer10.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
+	if err := nc.Consumer11.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
+	if err := nc.Consumer12.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
 

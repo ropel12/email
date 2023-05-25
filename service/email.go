@@ -16,9 +16,10 @@ import (
 )
 
 const (
-	FrontEndURL  = "https://go-event.online/verify/"
-	FrontEndURL3 = "https://go-event.online/updateverif/"
-	FrontEndURL2 = "https://education-hub-fe-3q5c.vercel.app/pwd-new/"
+	FrontEndURL           = "https://go-event.online/verify/"
+	FrontEndURL3          = "https://go-event.online/updateverif/"
+	FrontEndURL2          = "https://education-hub-fe-3q5c.vercel.app/pwd-new/"
+	FrontEndURLDetailCost = "https://education-hub-fe-3q5c.vercel.app/student/transactions/"
 
 	EmailHost = "smtp.gmail.com"
 )
@@ -393,6 +394,105 @@ func SendEmailChangeEmail(sdata config.SenderConfig, hashedemail string) {
 
 	log.Printf("[INFO] Email Change Email sent to %s", string(email))
 
+}
+
+func SendDetailCost(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending Change Email from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Detail Biaya %s", rdata.School),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("info.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		URL     string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		Type    string
+		School  string
+	}{
+		URL:     fmt.Sprintf("%s%d", FrontEndURLDetailCost, rdata.Schoolid),
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+		Type:    rdata.Type,
+		School:  rdata.School,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email Change Email sent to %s", rdata.Email)
+}
+func SendFinishRegister(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending Finish Registration Email from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Penerimaan Sekolah %s", rdata.School),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("finish.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		School  string
+	}{
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+		School:  rdata.School,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Email Change Email sent to %s", rdata.Email)
 }
 
 func getTemplate(htmlFile string) (t *template.Template, err error) {
