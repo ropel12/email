@@ -13,6 +13,7 @@ type (
 		Test          string `json:"test"`
 		Type          string `json:"type"`
 		Schoolid      int    `json:"school_id"`
+		Reason        string `json:"reason"`
 	}
 	ReqAddQuiz struct {
 		SchoolID int    `json:"school_id"`

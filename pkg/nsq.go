@@ -22,6 +22,7 @@ type NSQConsumer struct {
 	Consumer10 *nsq.Consumer
 	Consumer11 *nsq.Consumer
 	Consumer12 *nsq.Consumer
+	Consumer13 *nsq.Consumer
 	Env        config.NSQConfig
 }
 
@@ -106,6 +107,13 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) err
 		message.Finish()
 		return nil
 	}))
+	nc.Consumer13.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+		data := entities.Data{}
+		json.Unmarshal(message.Body, &data)
+		go service.SendFailRegistration(rdata, data)
+		message.Finish()
+		return nil
+	}))
 	if err := nc.Consumer.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
@@ -143,7 +151,9 @@ func (nc *NSQConsumer) Start(rdata config.SenderConfig, conf *config.Config) err
 	if err := nc.Consumer12.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
 		return err
 	}
-
+	if err := nc.Consumer13.ConnectToNSQD(nc.Env.Host + ":" + nc.Env.Port); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -158,4 +168,7 @@ func (nc *NSQConsumer) Stop() {
 	nc.Consumer8.Stop()
 	nc.Consumer9.Stop()
 	nc.Consumer10.Stop()
+	nc.Consumer11.Stop()
+	nc.Consumer12.Stop()
+	nc.Consumer13.Stop()
 }

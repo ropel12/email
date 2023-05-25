@@ -492,7 +492,57 @@ func SendFinishRegister(sdata config.SenderConfig, rdata entities.Data) {
 		return
 	}
 
-	log.Printf("[INFO] Email Change Email sent to %s", rdata.Email)
+	log.Printf("[INFO] Finish Registration Email sent to %s", rdata.Email)
+}
+
+func SendFailRegistration(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending Finish Registration Email from %s", sdata.Email)
+
+	sb := subjectBody{
+		subject: fmt.Sprintf("Pendaftaran Gagal %s", rdata.School),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("failed.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		School  string
+		Reason  string
+	}{
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+		School:  rdata.School,
+		Reason:  rdata.Reason,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Fail Registration Email sent to %s", rdata.Email)
 }
 
 func getTemplate(htmlFile string) (t *template.Template, err error) {
