@@ -544,13 +544,60 @@ func SendFailRegistration(sdata config.SenderConfig, rdata entities.Data) {
 
 	log.Printf("[INFO] Fail Registration Email sent to %s", rdata.Email)
 }
+func SendMonthlyBilling(sdata config.SenderConfig, rdata entities.Data) {
+	log.Printf("[INFO] Sending Monthly Billing Email from %s", sdata.Email)
 
+	sb := subjectBody{
+		subject: fmt.Sprintf("Tagihan Bulanan - %s", rdata.School),
+		body:    bytes.Buffer{},
+	}
+
+	t, err := getTemplate("billing.html")
+	if err != nil {
+		log.Printf("[ERROR] Failed to get template: %s", err)
+		return
+	}
+
+	err = t.Execute(&sb.body, struct {
+		TWT     string
+		IG      string
+		FB      string
+		Email   string
+		Telpon  string
+		Name    string
+		Slogan  string
+		Cusname string
+		School  string
+		Total   int
+	}{
+		TWT:     sdata.Twitter,
+		FB:      sdata.Facebook,
+		IG:      sdata.Instagram,
+		Email:   sdata.Email,
+		Telpon:  sdata.Phone,
+		Cusname: rdata.Name,
+		Slogan:  sdata.Slogan,
+		Name:    sdata.Name,
+		School:  rdata.School,
+		Total:   rdata.Total,
+	})
+
+	if err != nil {
+		log.Fatalf("[ERROR] Failed to execute template: %v", err)
+	}
+
+	if err := sendEmail(sdata.Email, sdata.Password, rdata.Email, sb); err != nil {
+		log.Printf("[ERROR] Failed to send email: %s", err)
+		return
+	}
+
+	log.Printf("[INFO] Failed Monthly Billing Email sent to %s", rdata.Email)
+}
 func getTemplate(htmlFile string) (t *template.Template, err error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-
 	wd = wd + "/template/"
 
 	t, err = template.ParseFiles(wd + htmlFile)

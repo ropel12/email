@@ -30,6 +30,8 @@ type NSQConfig struct {
 	Topic11   string `mapstructure:"TOPIC11"`
 	Topic12   string `mapstructure:"TOPIC12"`
 	Topic13   string `mapstructure:"TOPIC13"`
+	Topic14   string `mapstructure:"TOPIC14"`
+	Topic15   string `mapstructure:"TOPIC15"`
 }
 
 type SenderConfig struct {
@@ -43,11 +45,18 @@ type SenderConfig struct {
 	Instagram string `mapstructure:"IG"`
 	Facebook  string `mapstructure:"FB"`
 }
-
+type DatabaseConfig struct {
+	Host     string `mapstructure:"HOST"`
+	Port     string `mapstructure:"PORT"`
+	Username string `mapstructure:"USERNAME"`
+	Password string `mapstructure:"PASSWORD"`
+	Name     string `mapstructure:"NAME"`
+}
 type Config struct {
-	Sender   SenderConfig `mapstructure:"SENDER"`
-	NSQ      NSQConfig    `mapstructure:"NSQ"`
-	AuthQuiz string       `mapstructure:"QUIZ"`
+	Sender   SenderConfig   `mapstructure:"SENDER"`
+	NSQ      NSQConfig      `mapstructure:"NSQ"`
+	AuthQuiz string         `mapstructure:"QUIZ"`
+	Database DatabaseConfig `mapstructure:"DATABASE"`
 }
 
 func NewConfig() (*Config, error) {

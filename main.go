@@ -14,10 +14,9 @@ func main() {
 		log.Fatalf("[FATAL] Failed to inject dependency: %v", err)
 		return
 	}
-
 	go func() {
 		log.Println("[INFO] Starting Service Consumer")
-		if err := con.NSQConsumer.Start(con.Config.Sender, con.Config); err != nil {
+		if err := con.NSQConsumer.Start(con.Config.Sender, con.Config, con.Db); err != nil {
 			log.Fatalf("[FATAL] Failed to start NSQ Consumer: %v", err)
 		}
 	}()
